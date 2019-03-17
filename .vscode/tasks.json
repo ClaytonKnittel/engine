@@ -13,6 +13,7 @@
                 "main.cpp",
                 "math.cpp",
                 "input.cpp",
+                "camera.cpp",
                 "res/shader.cpp",
                 "-lglew.2.1",
                 "-lglfw.3.2",

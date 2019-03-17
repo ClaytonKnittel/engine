@@ -10,6 +10,7 @@
 
 #include "math.h"
 #include "input.h"
+#include "camera.h"
 
 using std::printf;
 
@@ -19,38 +20,6 @@ struct vertex {
     GLfloat x, y, z;
     GLfloat r, g, b, a;
 };
-
-struct camera {
-    GLfloat x, y, z;
-    GLfloat phi, theta, psi; // euler angles
-
-    void forward() {
-
-    }
-
-    static const GLfloat fvel;
-    static const GLfloat bvel;
-    static const GLfloat pvel;
-    static const GLfloat rotvel;
-    static const GLfloat thetavel;
-    static const GLfloat tiltvel;
-};
-const GLfloat camera::fvel = 1.f;
-const GLfloat camera::bvel = .7f;
-const GLfloat camera::pvel = .8f;
-const GLfloat camera::rotvel = .05f;
-const GLfloat camera::thetavel = .05f;
-const GLfloat camera::tiltvel = .05f;
-
-camera cam;
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    switch (key) {
-    case GLFW_KEY_W:
-        cam.forward();
-        break;
-    }
-}
 
 int main(int argc, char *argv[]) {
     glfwInit();
@@ -82,6 +51,8 @@ int main(int argc, char *argv[]) {
     }
 
     InputHandler i(window);
+    camera cam;
+    cam.setInputs(i);
 
     glViewport(0, 0, width, height);
 
@@ -116,10 +87,11 @@ int main(int argc, char *argv[]) {
 
 
     GLint projection = glGetUniformLocation(shader.programLoc(), "projection");
-    GLint cam = glGetUniformLocation(shader.programLoc(), "cam");
-    GLint model = glGetUniformLocation(shader.programLoc(), "model");
+    GLint cammat = glGetUniformLocation(shader.programLoc(), "cam");
+    GLint modelmat = glGetUniformLocation(shader.programLoc(), "model");
 
     int t = 0;
+    float c[16];
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -132,15 +104,16 @@ int main(int argc, char *argv[]) {
         float dt = static_cast<float>(t) / 1000.f;
 
         loadPerspectiveProjection(projection, 1.0f, 1.0f, .5f, 5.0f);
-        const float c[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -dt, 1};
-        glUniformMatrix4fv(cam, 1, GL_FALSE, c);
+        cam.setMatrix(c);
+        glUniformMatrix4fv(cammat, 1, GL_FALSE, c);
         const float m[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-        glUniformMatrix4fv(model, 1, GL_FALSE, m);
+        glUniformMatrix4fv(modelmat, 1, GL_FALSE, m);
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
 
+        i.run(.01f);
         glfwSwapBuffers(window);
     }
 

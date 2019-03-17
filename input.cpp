@@ -1,6 +1,5 @@
 
 #include "input.h"
-#include <functional>
 
 using std::map;
 
@@ -19,12 +18,22 @@ InputHandler::~InputHandler() {
 
 }
 
-void InputHandler::add(GLint key, void (*action)()) {
-    keymap[key] = action;
+void InputHandler::add(GLint key, std::function<void(float)> action) {
+    keymap[key] = {0, action};
 }
 
 void InputHandler::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
-    printf("%zu\n", keymap.size());
+    if (action == GLFW_REPEAT)
+        return;
+    auto it = keymap.find(key);
+    if (it != keymap.end())
+        it->second.first = (action == GLFW_PRESS);
+}
+
+void InputHandler::run(float dt) {
+    for (auto it = keymap.begin(); it != keymap.end(); it++)
+        if (it->second.first)
+            it->second.second(dt);
 }
 
 
