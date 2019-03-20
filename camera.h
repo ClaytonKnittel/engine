@@ -6,6 +6,10 @@ class InputHandler;
 
 struct camera {
     GLfloat x, y, z;
+
+    // positive phi is a rotation about y-axis
+    // positive theta is tilting your head upwards
+    // positive psi is a rotation about z relative to the camera
     GLfloat phi, theta, psi; // euler angles
 
     camera();
@@ -14,6 +18,8 @@ struct camera {
 
     void forward(float dt);
     void backward(float dt);
+    void down(float dt);
+    void up(float dt);
     void panLeft(float dt);
     void panRight(float dt);
     void rotateLeft(float dt);
@@ -29,6 +35,7 @@ struct camera {
     static const GLfloat fvel;
     static const GLfloat bvel;
     static const GLfloat pvel;
+    static const GLfloat vvel;
     static const GLfloat rotvel;
     static const GLfloat thetavel;
     static const GLfloat tiltvel;

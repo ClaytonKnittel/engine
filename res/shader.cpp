@@ -45,6 +45,10 @@ GLuint program::programLoc() {
     return prog;
 }
 
+GLuint program::uniformLoc(const char *name) {
+    return glGetUniformLocation(prog, name);
+}
+
 void program::use() {
     glUseProgram(prog);
 }

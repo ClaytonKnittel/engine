@@ -14,7 +14,8 @@ using std::cos;
 const GLfloat camera::fvel = 1.f;
 const GLfloat camera::bvel = .7f;
 const GLfloat camera::pvel = .8f;
-const GLfloat camera::rotvel = .05f;
+const GLfloat camera::vvel = .7f;
+const GLfloat camera::rotvel = .2f;
 const GLfloat camera::thetavel = .05f;
 const GLfloat camera::tiltvel = .05f;
 
@@ -30,34 +31,43 @@ void camera::setInputs(InputHandler &i) {
 
     i.add(GLFW_KEY_Q, std::bind(&camera::panLeft, this, _1));
     i.add(GLFW_KEY_E, std::bind(&camera::panRight, this, _1));
+    i.add(GLFW_KEY_X, std::bind(&camera::up, this, _1));
+    i.add(GLFW_KEY_Z, std::bind(&camera::down, this, _1));
+
+    i.add(GLFW_KEY_F, std::bind(&camera::lookDown, this, _1));
+    i.add(GLFW_KEY_R, std::bind(&camera::lookUp, this, _1));
 }
 
 void camera::forward(float dt) {
     float d = dt * fvel;
-    float st = cos(theta);
-    x += sin(phi) * st * d;
-    z -= cos(phi) * st * d;
+    x -= sin(phi) * d;
+    z -= cos(phi) * d;
 }
 
 void camera::backward(float dt) {
     float d = dt * bvel;
-    float st = cos(theta);
-    x -= sin(phi) * st * d;
-    z += cos(phi) * st * d;
+    x += sin(phi) * d;
+    z += cos(phi) * d;
+}
+
+void camera::down(float dt) {
+    y -= dt * vvel;
+}
+
+void camera::up(float dt) {
+    y += dt * vvel;
 }
 
 void camera::panLeft(float dt) {
     float d = dt * pvel;
-    float st = cos(theta);
-    x -= cos(phi) * st * d;
-    z += sin(phi) * st * d;
+    x -= cos(phi) * d;
+    z += sin(phi) * d;
 }
 
 void camera::panRight(float dt) {
     float d = dt * pvel;
-    float st = cos(theta);
-    x += cos(phi) * st * d;
-    z -= sin(phi) * st * d;
+    x += cos(phi) * d;
+    z -= sin(phi) * d;
 }
 
 void camera::rotateLeft(float dt) {
@@ -69,53 +79,30 @@ void camera::rotateRight(float dt) {
 }
 
 void camera::lookUp(float dt) {
-
+    theta += dt * thetavel;
 }
 
 void camera::lookDown(float dt) {
-
+    theta -= dt * thetavel;
 }
 
 void camera::tiltLeft(float dt) {
-
+    psi += dt * tiltvel;
 }
 
 void camera::tiltRight(float dt) {
-
+    psi -= dt * tiltvel;
 }
 
 
 void camera::setMatrix(float *f) const {
-    // float cp = cos(phi);
-    // float sp = sin(phi);
-    // float ct = cos(theta);
-    // float st = sin(theta);
-    // float cs = cos(psi);
-    // float ss = sin(psi);
 
-    mat4 rp = mat4::rotY(phi);
-    mat4 rt = mat4::rotX(theta);
-    mat4 rs = mat4::rotZ(psi);
+    mat4 rp = mat4::rotY(-phi);
+    mat4 rt = mat4::rotX(-theta);
+    mat4 rs = mat4::rotZ(-psi);
     mat4 tr = mat4::trans(-x, -y, -z);
 
-    mat4 res = rp * rt * rs * tr;
+    mat4 res = rs * rt * rp * tr;
     for (int i = 0; i < 16; i++)
         f[i] = res.m[i];
-
-    // f[0] = cp * cs + st * sp * ss;
-    // f[1] = ct * ss;
-    // f[2] = cp * st * ss - cs * sp;
-    // f[3] = 0;
-    // f[4] = cs * st * sp - cp * ss;
-    // f[5] = ct * cs;
-    // f[6] = cp * cs * st + sp * ss;
-    // f[7] = 0;
-    // f[8] = ct * sp;
-    // f[9] = -st;
-    // f[10] = ct * cp;
-    // f[11] = 0;
-    // f[12] = -x;
-    // f[13] = -y;
-    // f[14] = -z;
-    // f[15] = 1;
 }

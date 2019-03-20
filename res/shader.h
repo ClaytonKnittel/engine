@@ -16,6 +16,7 @@ public:
     program(const char * vertex_shader_path, const char * fragment_shader_path);
     void use();
     GLuint programLoc();
+    GLuint uniformLoc(const char *name);
     
 private:
     GLuint prog;
