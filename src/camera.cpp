@@ -4,7 +4,7 @@
 #include "camera.h"
 
 #include "input.h"
-#include "math.h"
+#include "vecmath.h"
 #include <cmath>
 #include <functional>
 
@@ -103,6 +103,5 @@ void camera::setMatrix(float *f) const {
     mat4 tr = mat4::trans(-x, -y, -z);
 
     mat4 res = rs * rt * rp * tr;
-    for (int i = 0; i < 16; i++)
-        f[i] = res.m[i];
+    memcpy(f, res.m, 16 * sizeof(float));
 }

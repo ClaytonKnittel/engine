@@ -1,10 +1,19 @@
 
-#include "math.h"
+#include "vecmath.h"
 #include <cmath>
 
+#include <cstring>
+
+#define PI 3.14159265358
+
+#define GLEW_STATIC
+#include <GL/glew.h>
+
+using std::cos;
+using std::sin;
+
 void loadPerspectiveProjection(GLint matrix, float fovy, float aspect, float znear, float zfar) {
-    const float f = 1 / std::tan(fovy / 2);
-    // const float proj[16] = {f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (zfar + znear) / (znear - zfar), 2 * zfar * znear / (znear - zfar), 0, 0, -1, 0};
+    const float f = 1 / std::tan(PI * fovy / 360.f);
     const float proj[16] = {f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (zfar + znear) / (znear - zfar), -1, 0, 0, 2 * zfar * znear / (znear - zfar), 0};
     glUniformMatrix4fv(matrix, 1, GL_FALSE, proj);
 }
@@ -18,8 +27,7 @@ mat4::mat4(const mat4 &mat) {
 }
 
 mat4& mat4::operator=(const mat4 &mat) {
-    for (int i = 0; i < 16; i++)
-        m[i] = mat.m[i];
+    memcpy(m, mat.m, 16 * sizeof(float));
     return *this;
 }
 
