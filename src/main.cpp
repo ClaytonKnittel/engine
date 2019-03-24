@@ -113,8 +113,8 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    printf("mins: %f, %f, %f\n", mins[0], mins[1], mins[2]);
-    printf("maxs: %f, %f, %f\n", maxs[0], maxs[1], maxs[2]);
+    // printf("mins: %f, %f, %f\n", mins[0], mins[1], mins[2]);
+    // printf("maxs: %f, %f, %f\n", maxs[0], maxs[1], maxs[2]);
 
     int twidth, theight, nrChannels;
     unsigned char *data = stbi_load("/users/claytonknittel/downloads/cars/tex/Car_12.png", &twidth, &theight, &nrChannels, 0);
