@@ -1,11 +1,44 @@
+#pragma once
 
 #include <cmath>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
 
+typedef unsigned int uint;
+
 void loadPerspectiveProjection(GLint matrix, float fovy, float aspect, float znear, float zfar);
 
+
+struct vec4 {
+    GLfloat x, y, z, w;
+
+    GLfloat dot(const vec4 &v) const;
+    GLfloat mag() const;
+    vec4 normalized() const;
+};
+
+struct vec3 {
+    GLfloat x, y, z;
+
+    vec3 operator+(const vec3 &v) const;
+    vec3 operator-(const vec3 &v) const;
+    vec3 operator*(GLfloat f) const;
+    vec3 operator/(GLfloat f) const;
+    
+    GLfloat dot(const vec3 &v) const;
+    vec3 cross(const vec3 &v) const;
+    GLfloat mag() const;
+    vec3 normalized() const;
+};
+
+struct vec2 {
+    GLfloat x, y;
+
+    GLfloat dot(const vec2 &v) const;
+    GLfloat mag() const;
+    vec2 normalized() const;
+};
 
 struct mat4 {
     float m[16];

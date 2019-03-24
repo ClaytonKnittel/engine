@@ -1,8 +1,9 @@
+#pragma once
 
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-class InputHandler;
+class input_handler;
 
 struct camera {
     GLfloat x, y, z;
@@ -14,7 +15,7 @@ struct camera {
 
     camera();
 
-    void setInputs(InputHandler &i);
+    void setInputs(input_handler &i);
 
     void forward(float dt);
     void backward(float dt);

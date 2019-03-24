@@ -21,3 +21,7 @@ $(EXE): $(OBJ)
 
 $(ODIR)/%.o: $(SDIR)/%.cpp
 	$(CC) $(CFLAGS) $< -o $@
+
+.PHONY: clean
+clean:
+	-rm -f $(ODIR)/*.o *~ core $(IDIR)/*~

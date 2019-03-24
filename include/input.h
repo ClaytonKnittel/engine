@@ -1,3 +1,4 @@
+#pragma once
 
 #include <map>
 #include <functional>
@@ -7,10 +8,10 @@
 
 #include <GLFW/glfw3.h>
 
-class InputHandler {
+class input_handler {
 public:
-    InputHandler(GLFWwindow *window);
-    ~InputHandler();
+    input_handler(GLFWwindow *window);
+    ~input_handler();
     void add(GLint key, std::function<void(float)>);
 
     void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);

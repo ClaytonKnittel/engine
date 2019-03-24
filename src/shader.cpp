@@ -19,6 +19,9 @@ using std::ifstream;
 using std::stringstream;
 
 
+const char* SHADER_PATH = "res/shaders/";
+
+
 program::program(const char *v_path, const char *f_path) {
     shader vert(v_path, GL_VERTEX_SHADER);
     shader frag(f_path, GL_FRAGMENT_SHADER);
@@ -61,9 +64,13 @@ shader::shader(const char *code_loc, GLint type) {
     file.exceptions(ifstream::badbit);
     
     try {
-        file.open(code_loc);
-        if (!file.is_open())
+        std::ostringstream full_path;
+        full_path << SHADER_PATH << code_loc;
+        file.open(full_path.str());
+        if (!file.is_open()) {
+            fprintf(stderr, "could not open path to shader: %s", full_path.str().c_str());
             throw ifstream::failure("");
+        }
         stringstream s;
         s << file.rdbuf();
         file.close();

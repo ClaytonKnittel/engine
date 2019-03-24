@@ -3,6 +3,6 @@
 #include <vector>
 using std::vector;
 
-#include "shape.h"
+#include "vecmath.h"
 
 void loadObj(const char* obj_file, vector<vec3> &vertices, vector<vec2> &texCoords);

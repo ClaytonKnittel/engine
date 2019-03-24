@@ -18,6 +18,68 @@ void loadPerspectiveProjection(GLint matrix, float fovy, float aspect, float zne
     glUniformMatrix4fv(matrix, 1, GL_FALSE, proj);
 }
 
+
+
+GLfloat vec4::dot(const vec4 &v) const {
+    return x * v.x + y * v.y + z * v.z + w * v.w;
+}
+
+GLfloat vec4::mag() const {
+    return std::sqrtf(x * x + y * y + z * z + w * w);
+}
+
+vec4 vec4::normalized() const {
+    float m = mag();
+    return {x / m, y / m, z / m, w / m};
+}
+
+
+vec3 vec3::operator+(const vec3 &v) const {
+    return {x + v.x, y + v.y, z + v.z};
+}
+
+vec3 vec3::operator-(const vec3 &v) const {
+    return {x - v.x, y - v.y, z - v.z};
+}
+
+vec3 vec3::operator*(GLfloat f) const {
+    return {x * f, y * f, z * f};
+}
+
+vec3 vec3::operator/(GLfloat f) const {
+    return {x / f, y / f, z / f};
+}
+
+GLfloat vec3::dot(const vec3 &v) const {
+    return x * v.x + y * v.y + z * v.z;
+}
+
+vec3 vec3::cross(const vec3 &v) const {
+    return {y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x};
+}
+
+GLfloat vec3::mag() const {
+    return std::sqrtf(x * x + y * y + z * z);
+}
+
+vec3 vec3::normalized() const {
+    return *this / mag();
+}
+
+
+GLfloat vec2::dot(const vec2 &v) const {
+    return x * v.x + y * v.y;
+}
+
+GLfloat vec2::mag() const {
+    return std::sqrtf(x * x + y * y);
+}
+
+vec2 vec2::normalized() const {
+    float m = mag();
+    return {x / m, y / m};
+}
+
     
 mat4::mat4() {}
 

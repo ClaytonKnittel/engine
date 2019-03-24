@@ -5,11 +5,14 @@
 //  Created by Clayton Knittel on 9/20/18.
 //  Copyright © 2018 Clayton Knittel. All rights reserved.
 //
+#pragma once
 
 #ifndef shader_h
 #define shader_h
 
 #include <GL/glew.h>
+
+extern const char* SHADER_PATH;
 
 class program {
 public:

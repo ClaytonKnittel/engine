@@ -1,3 +1,4 @@
 .vscode/ipch/*
 rel
 .DS_Store
+obj/*.o

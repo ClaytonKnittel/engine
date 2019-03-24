@@ -22,7 +22,7 @@ const GLfloat camera::tiltvel = .05f;
 
 camera::camera(): x(0), y(0), z(0), phi(0), theta(0), psi(0) {}
 
-void camera::setInputs(InputHandler &i) {
+void camera::setInputs(input_handler &i) {
     using namespace std::placeholders;
     i.add(GLFW_KEY_W, std::bind(&camera::forward, this, _1));
     i.add(GLFW_KEY_S, std::bind(&camera::backward, this, _1));
