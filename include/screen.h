@@ -7,6 +7,7 @@
 
 #include "camera.h"
 #include "input.h"
+#include "vecmath.h"
 
 class window;
 
@@ -15,9 +16,16 @@ class screen {
 
 public:
     screen(window *parent);
-// private:
+
+    void loadProjection();
+private:
     camera cam;
+
+    // renderer<> *rend;
+
+    GLint projectionMatrix, cameraMatrix;
     GLint width, height;
+    GLfloat fov, aspectRatio, viewDistance;
 };
 
 class window {
@@ -27,8 +35,13 @@ public:
     ~window();
 
     bool shouldClose() const;
+    void beginDraw() const;
+    void endDraw() const;
 
-// private:
+    void setBGColor(float r, float g, float b);
+
+private:
+    vec3 bgColor;
     input_handler *input;
     GLFWwindow *w;
     screen *_screen;

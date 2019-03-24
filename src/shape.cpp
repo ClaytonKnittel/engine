@@ -59,6 +59,10 @@ void abstract_shape::setModelMatrix(GLint modelMatrix) {
     glUniformMatrix4fv(modelMatrix, 1, GL_FALSE, m);
 }
 
+void abstract_shape::setScale(float scale) {
+    this->scale = scale;
+}
+
 void abstract_shape::init_arrays() {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);

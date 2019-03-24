@@ -26,6 +26,8 @@ public:
 
     void setModelMatrix(GLint modelMatrix);
 
+    void setScale(float scale);
+
     // specifies number of floats per vertex
     // (i.e. 6 if you only have vertices and normals,
     // 3 per vertex and 3 per normal)
