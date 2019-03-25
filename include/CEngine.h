@@ -16,7 +16,7 @@
 class CEngine {
 public:
 
-    CEngine(GLint width, GLint height);
+    CEngine(GLint width, GLint height, GLint renderingStrategy);
 
 private:
     window w;
