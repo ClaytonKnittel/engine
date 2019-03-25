@@ -54,7 +54,7 @@ void abstract_shape::bufferData() const {
     glBindVertexArray(0);
 }
 
-void abstract_shape::setModelMatrix(GLint modelMatrix) {
+void abstract_shape::setModelMatrix(GLint modelMatrix) const {
     const float m[16] = {scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, 10.f};
     glUniformMatrix4fv(modelMatrix, 1, GL_FALSE, m);
 }

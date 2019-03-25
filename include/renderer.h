@@ -3,7 +3,7 @@
 #include "shape.h"
 #include "shader.h"
 #include "screen.h"
-#include "camera.h"
+#include "scene.h"
 
 using std::vector;
 
@@ -20,25 +20,22 @@ using std::vector;
 //     renderer<textured_shape> rt;
 // };
 
+
+const extern GLint COLORED_RENDERING;
+const extern GLint TEXTURED_RENDERING;
+
 /*
 * the renderer is the object which handles the
-* tracking and rendering of a specific class of
-* shapes, which must inherit from abstract_shape
+* rendering of the entities in the scene
 */
-template<class shape>
 class renderer {
-    // ensure that all template parameters are abstract_shapes
-    static_assert(std::is_base_of<abstract_shape, shape>::value, "shape must inherit from abstract_shape");
 
 public:
-    renderer();
+    renderer(const GLint rendererStrategy);
 
-    virtual void render(screen &s);
+    virtual void render(screen &, scene &);
 
-    virtual void add(const shape &s);
-
-// private:
-    vector<shape> shapes;
+private:
     program shader;
 
     // projection and camera matrix uniform locations

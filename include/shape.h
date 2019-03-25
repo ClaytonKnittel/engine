@@ -24,7 +24,7 @@ public:
     // to the GPU
     void bufferData() const;
 
-    void setModelMatrix(GLint modelMatrix);
+    void setModelMatrix(GLint modelMatrix) const;
 
     void setScale(float scale);
 

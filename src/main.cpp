@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-#include "screen.h"
+#include "window.h"
 #include "vecmath.h"
 #include "input.h"
 #include "camera.h"
