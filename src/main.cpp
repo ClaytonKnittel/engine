@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     renderer<textured_shape> r;
 
     // program shader("two.vs", "two.frag");
-    program shader("tex.vs", "tex.frag");
+    // program shader("tex.vs", "tex.frag");
 
     std::vector<vec3> verts;
     std::vector<vec2> texs;
@@ -41,18 +41,21 @@ int main(int argc, char *argv[]) {
     tobj.bufferData();
     tobj.setScale(.1f);
 
-    GLint projection = shader.uniformLoc("projection");
-    GLint cammat = shader.uniformLoc("cam");
-    GLint modelmat = shader.uniformLoc("model");
-    GLint lightDir = shader.uniformLoc("lightDir");
+    r.add(tobj);
+
+    GLint projection = r.shader.uniformLoc("projection");
+    GLint cammat = r.shader.uniformLoc("cam");
+    GLint modelmat = r.shader.uniformLoc("model");
+    GLint lightDir = r.shader.uniformLoc("lightDir");
 
     int t = 0;
+    float c[16];
 
     tex.use();
 
     while (!w.shouldClose()) {
         w.beginDraw();
-        shader.use();
+        r.shader.use();
 
         t++;
         float dt = static_cast<float>(t) / 1000.f;
@@ -61,7 +64,7 @@ int main(int argc, char *argv[]) {
 
         glUniform3f(lightDir, cos(dt), sin(dt), 0.f);
 
-        tobj.draw();
+        r.render(*w._screen);
         w.endDraw();
     }
 

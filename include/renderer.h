@@ -2,8 +2,23 @@
 #include <vector>
 #include "shape.h"
 #include "shader.h"
+#include "screen.h"
+#include "camera.h"
 
 using std::vector;
+
+
+// class world {
+// public:
+//     world();
+
+//     void add(colored_shape &s);
+//     void add(textured_shape &s);
+
+// private:
+//     renderer<colored_shape> rc;
+//     renderer<textured_shape> rt;
+// };
 
 /*
 * the renderer is the object which handles the
@@ -18,9 +33,14 @@ class renderer {
 public:
     renderer();
 
+    virtual void render(screen &s);
+
     virtual void add(const shape &s);
 
-private:
+// private:
     vector<shape> shapes;
     program shader;
+
+    // projection and camera matrix uniform locations
+    GLuint projLoc, camLoc, modelLoc;
 };

@@ -15,15 +15,13 @@ class screen {
     friend class window;
 
 public:
-    screen(window *parent);
+    screen(window *parent, GLfloat fov, GLfloat aspectRatio, GLfloat viewDistance);
 
-    void loadProjection();
-private:
+    void loadProjection(GLuint projectionMatrix);
+    void loadCameraMatrix(GLuint camMatrix);
+// private:
     camera cam;
 
-    // renderer<> *rend;
-
-    GLint projectionMatrix, cameraMatrix;
     GLint width, height;
     GLfloat fov, aspectRatio, viewDistance;
 };
@@ -40,10 +38,12 @@ public:
 
     void setBGColor(float r, float g, float b);
 
-private:
+// private:
     vec3 bgColor;
     input_handler *input;
     GLFWwindow *w;
+
     screen *_screen;
+
     GLint width, height;
 };

@@ -3,12 +3,18 @@
 #include <iostream>
 
 
-screen::screen(window *parent) {
+screen::screen(window *parent, GLfloat fov, GLfloat aspectRatio, GLfloat viewDistance): fov(fov), aspectRatio(aspectRatio), viewDistance(viewDistance) {
     cam.setInputs(*parent->input);
 }
 
 void screen::loadProjection(GLuint projectionMatrix) {
     loadPerspectiveProjection(projectionMatrix, fov, aspectRatio, 1.f, viewDistance);
+}
+
+void screen::loadCameraMatrix(GLuint camMatrix) {
+    GLfloat c[16];
+    cam.setMatrix(c);
+    glUniformMatrix4fv(camMatrix, 1, GL_FALSE, c);
 }
 
 
@@ -30,7 +36,7 @@ window::window(GLint width, GLint height) : width(width), height(height) {
     }
 
     input = new input_handler(w);
-    _screen = new screen(this);
+    _screen = new screen(this, 70.f, 1.f, 50.f);
 
     glfwGetFramebufferSize(w, &_screen->width, &_screen->height);
 
@@ -65,11 +71,6 @@ void window::beginDraw() const {
     glfwPollEvents();
     glClearColor(bgColor.x, bgColor.y, bgColor.z, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    _screen->loadProjection();
-    GLfloat c[16];
-    _screen->cam.setMatrix(c);
-    glUniformMatrix4fv(cammat, 1, GL_FALSE, c);
 }
 
 void window::endDraw() const {

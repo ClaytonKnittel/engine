@@ -23,10 +23,8 @@ const char* SHADER_PATH = "res/shaders/";
 
 
 program::program(const char *v_path, const char *f_path) {
-    printf("In shader constructor: %s and %s\n", v_path, f_path);
     shader vert(v_path, GL_VERTEX_SHADER);
     shader frag(f_path, GL_FRAGMENT_SHADER);
-    printf("Past here\n");
     
     prog = glCreateProgram();
     glAttachShader(prog, vert.tag());
