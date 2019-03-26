@@ -1,4 +1,4 @@
-IDIR=./include
+IDIR=include
 CC=g++
 CFLAGS=-std=c++17 -I$(IDIR)
 
@@ -21,12 +21,11 @@ all: $(OBJ) $(EXE)
 $(EXE): $(OBJ)
 	$(CC) $(OBJ) -o $@ $(LIBS)
 
-include $(wildcard $(ODIR)/*.d)
-
 $(ODIR)/%.o: $(SDIR)/%.cpp
-	$(CC) -c $(CFLAGS) $< -o $@
-	$(CC) -MM $(CFLAGS) $< > $(ODIR)/$*.d
+	$(CC) -MMD -MP $(CFLAGS) -c $< -o $@
+
+-include $(wildcard $(ODIR)/*.d)
 
 .PHONY: clean
 clean:
-	-rm -f $(ODIR)/*.o $(ODIR)/*.d *~ core $(IDIR)/*~
+	-rm -f $(ODIR)/*.o $(ODIR)/*.d *~ core $(IDIR)/*~ rel
