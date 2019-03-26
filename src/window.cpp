@@ -43,7 +43,6 @@ window::window(GLint width, GLint height) : width(width), height(height) {
 
 window::~window() {
     delete _screen;
-    // delete input;
     glfwTerminate();
 }
 
@@ -58,10 +57,13 @@ void window::beginDraw() const {
 }
 
 void window::endDraw() const {
-    // input->run(.01f);
     glfwSwapBuffers(w);
 }
 
 void window::setBGColor(float r, float g, float b) {
     bgColor = {r, g, b};
+}
+
+screen* window::getScreen() {
+    return _screen;
 }

@@ -33,11 +33,11 @@ class renderer {
 public:
     renderer(const GLint rendererStrategy);
 
-    virtual void render(screen &, scene &);
+    virtual void render(const screen &, scene &);
 
 private:
     program shader;
 
     // projection and camera matrix uniform locations
-    GLuint projLoc, camLoc, modelLoc;
+    GLuint projLoc, camLoc, modelLoc, lightLoc;
 };

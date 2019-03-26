@@ -6,13 +6,13 @@
 #include <GLFW/glfw3.h>
 
 #include "camera.h"
-#include "input.h"
 #include "vecmath.h"
 #include "screen.h"
 
 
 class window {
-friend class screen;
+    friend class screen;
+    friend class input_handler;
 public:
     window(GLint width, GLint height);
     ~window();
@@ -23,9 +23,10 @@ public:
 
     void setBGColor(float r, float g, float b);
 
+    screen* getScreen();
+
 private:
     vec3 bgColor;
-    // input_handler *input;
     GLFWwindow *w;
 
     screen *_screen;

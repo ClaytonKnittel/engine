@@ -7,11 +7,11 @@ void keycallback(GLFWwindow *w, int key, int scancode, int action, int mods) {
     static_cast<input_handler*>(glfwGetWindowUserPointer(w))->key_callback(w, key, scancode, action, mods);
 }
 
-input_handler::input_handler(GLFWwindow *window) {
+input_handler::input_handler(const window &w) {
     // so we can call the object-specific implementation of
     // key_callback later on
-    glfwSetWindowUserPointer(window, this);
-    glfwSetKeyCallback(window, &keycallback);
+    glfwSetWindowUserPointer(w.w, this);
+    glfwSetKeyCallback(w.w, &keycallback);
 }
 
 input_handler::~input_handler() {

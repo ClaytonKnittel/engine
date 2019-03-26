@@ -4,19 +4,11 @@
 
 #include <GLFW/glfw3.h>
 
-#include "shader.h"
-
 #include <iostream>
 
-#include "window.h"
-#include "vecmath.h"
-#include "input.h"
-#include "camera.h"
-#include "shape.h"
+#include "CEngine.h"
 #include "objLoader.h"
-
 #include "stb_image.h"
-#include "renderer.h"
 
 #include <vector>
 
@@ -24,10 +16,9 @@ const GLint WIDTH = 800, HEIGHT = 800;
 
 int main(int argc, char *argv[]) {
 
-    window w(WIDTH, HEIGHT);
-    w.setBGColor(.02f, .21f, .04f);
+    // w.setBGColor(.02f, .21f, .04f);
 
-    renderer<textured_shape> r;
+    CEngine c(WIDTH, HEIGHT, TEXTURED_RENDERING);
 
     // program shader("two.vs", "two.frag");
     // program shader("tex.vs", "tex.frag");
@@ -37,35 +28,18 @@ int main(int argc, char *argv[]) {
     loadObj("/users/claytonknittel/downloads/cars/Low_Poly_City_Cars.obj", verts, texs);
 
     texture tex("/users/claytonknittel/downloads/cars/tex/Car_12.png");
-    textured_shape tobj(verts, texs, tex);
-    tobj.bufferData();
-    tobj.setScale(.1f);
+    // textured_shape tobj(verts, texs, tex);
+    // tobj.bufferData();
+    // tobj.setScale(.1f);
 
-    r.add(tobj);
+    // r.add(tobj);
 
-    GLint projection = r.shader.uniformLoc("projection");
-    GLint cammat = r.shader.uniformLoc("cam");
-    GLint modelmat = r.shader.uniformLoc("model");
-    GLint lightDir = r.shader.uniformLoc("lightDir");
+    std::shared_ptr<textured_shape> tobj = c.create_shape<textured_shape>(verts, texs, tex);
+    tobj->bufferData();
+    tobj->setScale(.1f);
 
-    int t = 0;
-    float c[16];
-
-    tex.use();
-
-    while (!w.shouldClose()) {
-        w.beginDraw();
-        r.shader.use();
-
-        t++;
-        float dt = static_cast<float>(t) / 1000.f;
-
-        tobj.setModelMatrix(modelmat);
-
-        glUniform3f(lightDir, cos(dt), sin(dt), 0.f);
-
-        r.render(*w._screen);
-        w.endDraw();
+    while (c.shouldDraw()) {
+        c.draw();
     }
 
     return 0;

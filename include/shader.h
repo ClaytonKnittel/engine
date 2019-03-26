@@ -17,6 +17,7 @@ extern const char* SHADER_PATH;
 class program {
 public:
     program(const char * vertex_shader_path, const char * fragment_shader_path);
+    ~program();
     void use();
     GLuint programLoc();
     GLuint uniformLoc(const char *name);

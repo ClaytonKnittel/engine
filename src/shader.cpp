@@ -30,7 +30,6 @@ program::program(const char *v_path, const char *f_path) {
     glAttachShader(prog, vert.tag());
     glAttachShader(prog, frag.tag());
     glLinkProgram(prog);
-    
     // print any linking errors
     GLint success;
     glGetProgramiv(prog, GL_LINK_STATUS, &success);
@@ -42,6 +41,10 @@ program::program(const char *v_path, const char *f_path) {
     
     glDeleteShader(vert.tag());
     glDeleteShader(frag.tag());
+}
+
+program::~program() {
+    glDeleteProgram(prog);
 }
 
 GLuint program::programLoc() {

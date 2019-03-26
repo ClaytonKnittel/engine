@@ -1,19 +1,6 @@
 
 #include "renderer.h"
 
-// template<>
-// renderer<colored_shape>::renderer(): shader("two.vs", "two.frag") {
-//     camLoc = shader.uniformLoc("cam");
-//     projLoc = shader.uniformLoc("projection");
-//     modelLoc = shader.uniformLoc("model");
-// }
-
-// template<>
-// renderer<textured_shape>::renderer(): shader("tex.vs", "tex.frag") {
-//     camLoc = shader.uniformLoc("cam");
-//     projLoc = shader.uniformLoc("projection");
-//     modelLoc = shader.uniformLoc("model");
-// }
 
 const GLint COLORED_RENDERING = 1;
 const GLint TEXTURED_RENDERING = 2;
@@ -39,16 +26,22 @@ const char* getFSLocation(const GLint rendererStrategy) {
 }
 
 renderer::renderer(const GLint rendererStrategy): shader(getVSLocation(rendererStrategy), getFSLocation(rendererStrategy)) {
+    projLoc = shader.uniformLoc("projection");
+    camLoc = shader.uniformLoc("cam");
+    modelLoc = shader.uniformLoc("model");
+    lightLoc = shader.uniformLoc("lightDir");
 }
 
-void renderer::render(screen &s, scene &sc) {
+void renderer::render(const screen &s, scene &sc) {
     shader.use();
 
     s.loadProjection(projLoc);
     s.loadCameraMatrix(camLoc);
+
+    glUniform3f(lightLoc, 1.f, 0.f, 0.f);
     
-    for (const abstract_shape &sh : sc.shapes()) {
-        sh.setModelMatrix(modelLoc);
-        sh.draw();
+    for (const std::shared_ptr<abstract_shape> sh : sc.getShapes()) {
+        sh->setModelMatrix(modelLoc);
+        sh->draw();
     }
 }

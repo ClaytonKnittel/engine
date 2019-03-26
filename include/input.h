@@ -8,9 +8,11 @@
 
 #include <GLFW/glfw3.h>
 
+#include "window.h"
+
 class input_handler {
 public:
-    input_handler(GLFWwindow *window);
+    input_handler(const window &w);
     ~input_handler();
     void add(GLint key, std::function<void(float)>);
 

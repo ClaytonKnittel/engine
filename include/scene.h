@@ -11,9 +11,11 @@ public:
 
     scene();
 
-    const vector<abstract_shape> &shapes() const;
+    void addShape(std::shared_ptr<abstract_shape>);
+    
+    const vector<std::shared_ptr<abstract_shape>> &getShapes() const;
 
 private:
-    vector<abstract_shape> shapes;
+    vector<std::shared_ptr<abstract_shape>> shapes;
 
 };
