@@ -7,6 +7,7 @@
 using std::ifstream;
 using std::istringstream;
 
+#define RESOURCE_LOC "res/"
 #define IMG_TYPE ".png"
 
 struct tuple {
@@ -40,13 +41,20 @@ struct triple {
 };
 
 
-string get_texture_loc(const char* obj_file) {
-    ifstream f;
+void open_obj_file(ifstream &f, const char* obj_file) {
     f.open(obj_file);
     if (!f.is_open()) {
-        printf("Unable to open .obj file %s\n", obj_file);
-        return "";
+        f.open(string(RESOURCE_LOC) + obj_file);
+        if (!f.is_open()) {
+            fprintf(stderr, "Unable to open .obj file %s\n", obj_file);
+            throw std::exception();
+        }
     }
+}
+
+string get_texture_loc(const char* obj_file) {
+    ifstream f;
+    open_obj_file(f, obj_file);
     string obj_file_str(obj_file);
     string dir;
     auto find = obj_file_str.find_last_of("/\\");
@@ -74,8 +82,7 @@ void loadAll(ifstream& f, vector<dataType> &vec, const string &key, void(*loadFu
     while (getline(f, buf) && (buf.size() <= key.size() || buf[key.size()] != ' ' || buf.substr(0, key.size()) != key));
     do {
         istringstream is(buf);
-        is >> test;
-        if (test != key)
+        if (!(is >> test) || test != key)
             break;
         loadFunc(is, vec);
     } while (getline(f, buf));
@@ -134,11 +141,7 @@ void loadIndex(istringstream &is, vector<storage> &v) {
 
 void loadObj(const char* obj_file, vector<vec3> &vertices, vector<vec2> &texCoords) {
     ifstream f;
-    f.open(obj_file);
-    if (!f.is_open()) {
-        printf("Unable to open .obj file %s\n", obj_file);
-        return;
-    }
+    open_obj_file(f, obj_file);
 
     vector<vec3> verts;
     vector<vec2> texs;
@@ -164,11 +167,7 @@ void loadObj(const char* obj_file, vector<vec3> &vertices, vector<vec2> &texCoor
 
 void loadObj(const char* obj_file, vector<vec3> &vertices, vector<vec3> &normals) {
     ifstream f;
-    f.open(obj_file);
-    if (!f.is_open()) {
-        printf("Unable to open .obj file %s\n", obj_file);
-        return;
-    }
+    open_obj_file(f, obj_file);
 
     vector<vec3> verts;
     vector<vec3> norms;
@@ -194,11 +193,7 @@ void loadObj(const char* obj_file, vector<vec3> &vertices, vector<vec3> &normals
 
 void loadObj(const char* obj_file, vector<vec3> &vertices, vector<vec3> &normals, vector<vec2> &texCoords) {
     ifstream f;
-    f.open(obj_file);
-    if (!f.is_open()) {
-        printf("Unable to open .obj file %s\n", obj_file);
-        return;
-    }
+    open_obj_file(f, obj_file);
 
     vector<vec3> verts;
     vector<vec3> norms;

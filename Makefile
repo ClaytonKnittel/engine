@@ -1,6 +1,6 @@
 IDIR=include
 CC=g++
-CFLAGS=-std=c++17 -I$(IDIR)
+CFLAGS=-std=c++17 -I$(IDIR) -MMD -MP
 
 SDIR=src
 ODIR=obj
@@ -22,7 +22,7 @@ $(EXE): $(OBJ)
 	$(CC) $(OBJ) -o $@ $(LIBS)
 
 $(ODIR)/%.o: $(SDIR)/%.cpp
-	$(CC) -MMD -MP $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 -include $(wildcard $(ODIR)/*.d)
 
