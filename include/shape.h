@@ -16,6 +16,10 @@ public:
     abstract_shape(vector<vec3> vertices);
     // all children must call init_arrays() in their constructors
     abstract_shape(vector<vec3> vertices, vector<vec3> normals);
+
+    abstract_shape();
+    // abstract_shape(const char* obj_file_loc);
+
     ~abstract_shape();
 
     virtual void draw() const;
@@ -76,6 +80,8 @@ public:
 
     textured_shape(vector<vec3> &vertices, vector<vec2> texCoords, texture &t);
     textured_shape(vector<vec3> &vertices, vector<vec3> &normals, vector<vec2> texCoords, texture &t);
+
+    textured_shape(const char* obj_file_loc);
     
     virtual void draw() const;
 

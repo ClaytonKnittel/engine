@@ -5,11 +5,10 @@
 
 CEngine::CEngine(GLint width, GLint height, GLint renderingStrategy): w(width, height), r(renderingStrategy), i(w) {
     w.getScreen()->getCamera().setInputs(i);
-    w.setBGColor(.02f, .21f, .04f);
 }
 
-bool CEngine::shouldDraw() const {
-    return !w.shouldClose();
+window &CEngine::getWindow() {
+    return w;
 }
 
 void CEngine::draw() {

@@ -29,7 +29,7 @@ public:
         return ptr;
     }
 
-    bool shouldDraw() const;
+    window &getWindow();
 
     void draw();
 

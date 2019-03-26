@@ -2,6 +2,8 @@
 #include "shape.h"
 #include <cstdio>
 
+#include "objLoader.h"
+
 const char* const colored_shape::vertex_shader_loc = "res/two.vs";
 const char* const colored_shape::fragment_shader_loc = "res/two.frag";
 const char* const textured_shape::vertex_shader_loc = "res/tex.vs";
@@ -21,6 +23,8 @@ abstract_shape::abstract_shape(vector<vec3> vertices, vector<vec3> normals): ver
         fprintf(stderr, "unequal number of vertices and normals in shape: %lu vertices and %lu normals\n", vertices.size(), normals.size());
     }
 }
+
+abstract_shape::abstract_shape() {}
 
 abstract_shape::~abstract_shape() {
     glDeleteVertexArrays(1, &vao);
@@ -128,6 +132,10 @@ textured_shape::textured_shape(vector<vec3> &vertices, vector<vec2> texCoords, t
 }
 
 textured_shape::textured_shape(vector<vec3> &vertices, vector<vec3> &normals, vector<vec2> texCoords, texture &t): abstract_shape(vertices, normals), texCoords(texCoords), tex(t) {
+    init_arrays();
+}
+
+textured_shape::textured_shape(const char* obj_file_loc) : abstract_shape(), tex(get_texture_loc(obj_file_loc)) {
     init_arrays();
 }
 
