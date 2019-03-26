@@ -1,13 +1,13 @@
 
 #include "objLoader.h"
 #include <fstream>
-#include <string>
 #include <sstream>
 #include <iostream>
 
 using std::ifstream;
-using std::string;
 using std::istringstream;
+
+#define IMG_TYPE ".png"
 
 struct tuple {
     const static uint size = 2;
@@ -40,22 +40,29 @@ struct triple {
 };
 
 
-const char* get_texture_loc(const char* obj_file) {
+string get_texture_loc(const char* obj_file) {
     ifstream f;
     f.open(obj_file);
     if (!f.is_open()) {
         printf("Unable to open .obj file %s\n", obj_file);
-        return;
+        return "";
     }
+    string obj_file_str(obj_file);
+    string dir;
+    auto find = obj_file_str.find_last_of("/\\");
+    if (find != string::npos)
+        dir = obj_file_str.substr(0, find + 1);
+
     string buf, first;
     while (getline(f, buf)) {
         istringstream is(buf);
         is >> first;
         if (first == "usemtl") {
             is >> buf;
-            return buf.c_str();
+            return dir + buf + IMG_TYPE;
         }
     }
+    return "";
 }
 
 

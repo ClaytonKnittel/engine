@@ -10,12 +10,16 @@ const char* const textured_shape::vertex_shader_loc = "res/tex.vs";
 const char* const textured_shape::fragment_shader_loc = "res/tex.frag";
 
 
-abstract_shape::abstract_shape(vector<vec3> vertices): vertices(vertices), normals(vertices.size()) {
-    for (int i = 0; i < normals.size(); i+=3) {
+void compute_normals(const vector<vec3> &vertices, vector<vec3> &normals) {
+    for (int i = 0; i < vertices.size(); i+=3) {
         vec3 norm = (vertices[i + 1] - vertices[i]).cross(vertices[i + 2] - vertices[i]).normalized();
         for (int j = 0; j < 3; j++)
-            normals[i + j] = norm;
+            normals.push_back(norm);
     }
+}
+
+abstract_shape::abstract_shape(vector<vec3> vertices): vertices(vertices) {
+    compute_normals(vertices, normals);
 }
 
 abstract_shape::abstract_shape(vector<vec3> vertices, vector<vec3> normals): vertices(vertices), normals(normals) {
@@ -37,7 +41,7 @@ void abstract_shape::draw() const {
     glBindVertexArray(0);
 }
 
-void abstract_shape::bufferData() const {
+void abstract_shape::bufferData(GLint drawMode) const {
     GLfloat *data = new GLfloat[vertex_size() * vertices.size()];
     
     const uint vsize = vertex_size();
@@ -54,7 +58,7 @@ void abstract_shape::bufferData() const {
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * size * vsize, data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * size * vsize, data, drawMode);
     glBindVertexArray(0);
 }
 
@@ -99,10 +103,12 @@ void abstract_shape::init_arrays() {
 
 colored_shape::colored_shape(vector<vec3> &vertices, vector<vec4> colors): abstract_shape(vertices), colors(colors) {
     init_arrays();
+    bufferData();
 }
 
 colored_shape::colored_shape(vector<vec3> &vertices, vector<vec3> &normals, vector<vec4> colors): abstract_shape(vertices, normals), colors(colors) {
     init_arrays();
+    bufferData();
 }
 
 uint colored_shape::vertex_size() const {
@@ -129,14 +135,19 @@ void colored_shape::fill_data(GLfloat *data, size_t size, uint stride) const {
 
 textured_shape::textured_shape(vector<vec3> &vertices, vector<vec2> texCoords, texture &t): abstract_shape(vertices), texCoords(texCoords), tex(t) {
     init_arrays();
+    bufferData();
 }
 
 textured_shape::textured_shape(vector<vec3> &vertices, vector<vec3> &normals, vector<vec2> texCoords, texture &t): abstract_shape(vertices, normals), texCoords(texCoords), tex(t) {
     init_arrays();
+    bufferData();
 }
 
-textured_shape::textured_shape(const char* obj_file_loc) : abstract_shape(), tex(get_texture_loc(obj_file_loc)) {
+textured_shape::textured_shape(const char* obj_file_loc) : abstract_shape(), tex(get_texture_loc(obj_file_loc).c_str()) {
+    loadObj(obj_file_loc, this->vertices, this->texCoords);
+    compute_normals(this->vertices, this->normals);
     init_arrays();
+    bufferData();
 }
 
 void textured_shape::draw() const {

@@ -17,7 +17,7 @@ texture::texture(const char* loc) {
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else {
-        fprintf(stderr, "Failed to load texture\n");
+        fprintf(stderr, "Failed to load texture at \"%s\"\n", loc);
     }
 
     stbi_image_free(data);

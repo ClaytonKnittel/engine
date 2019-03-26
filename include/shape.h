@@ -26,7 +26,7 @@ public:
 
     // computes all vertex data and buffers it
     // to the GPU
-    void bufferData() const;
+    void bufferData(GLint drawMode=GL_STATIC_DRAW) const;
 
     void setModelMatrix(GLint modelMatrix) const;
 
@@ -47,8 +47,9 @@ protected:
     // do initialization of the vao
     void init_arrays();
 
-private:
     vector<vec3> vertices, normals;
+
+private:
     GLuint vao, vbo;
 
     // how much to scale the object by when drawing

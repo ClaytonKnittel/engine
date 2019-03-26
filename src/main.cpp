@@ -11,6 +11,7 @@
 #include "stb_image.h"
 
 #include <vector>
+#include <string>
 
 const GLint WIDTH = 800, HEIGHT = 800;
 
@@ -20,14 +21,7 @@ int main(int argc, char *argv[]) {
 
     c.getWindow().setBGColor(.02f, .21f, .04f);
 
-    std::vector<vec3> verts;
-    std::vector<vec2> texs;
-    loadObj("/users/claytonknittel/downloads/cars/Low_Poly_City_Cars.obj", verts, texs);
-
-    texture tex("/users/claytonknittel/downloads/cars/tex/Car_12.png");
-
-    std::shared_ptr<textured_shape> tobj = c.create_shape<textured_shape>(verts, texs, tex);
-    tobj->bufferData();
+    std::shared_ptr<textured_shape> tobj = c.create_shape<textured_shape>("/users/claytonknittel/downloads/cars/Low_Poly_City_Cars.obj");
     tobj->setScale(.1f);
 
     while (!c.getWindow().shouldClose()) {
