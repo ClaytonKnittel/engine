@@ -13,6 +13,9 @@ using std::istringstream;
 struct tuple {
     const static uint size = 2;
     uint i, j;
+
+    tuple(const vector<uint> &v): i(v[0]), j(v[1]) {}
+
     uint operator[](const int ind) {
         switch (ind) {
         case 0:
@@ -25,8 +28,11 @@ struct tuple {
 };
 
 struct triple {
-    const static uint size = 2;
+    const static uint size = 3;
     uint i, j, k;
+
+    triple(const vector<uint> &v): i(v[0]), j(v[1]), k(v[2]) {}
+
     uint operator[](const int ind) {
         switch (ind) {
         case 0:
@@ -34,7 +40,7 @@ struct triple {
         case 1:
             return j;
         case 2:
-            return j;
+            return k;
         }
         return 0xffffffff;
     }
@@ -132,8 +138,7 @@ void loadIndex(istringstream &is, vector<storage> &v) {
     }
     for (int i = 0; i < in.size() - 2; i++) {
         for (int j = 0; j < 3; j++) {
-            unsigned int* f = &in[i + j][0];
-            v.push_back({f[0], f[1]});
+            v.push_back(in[i + j]);
         }
     }
 }

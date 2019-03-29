@@ -11,6 +11,8 @@ window &CEngine::getWindow() {
     return w;
 }
 
+const GLint WIDTH = 800, HEIGHT = 800;
+
 void CEngine::draw() {
     w.beginDraw();
     r.render(*w.getScreen(), s);

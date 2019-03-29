@@ -20,6 +20,10 @@ void loadPerspectiveProjection(GLint matrix, float fovy, float aspect, float zne
 
 
 
+vec4::vec4(GLfloat x, GLfloat y, GLfloat z, GLfloat w): x(x), y(y), z(z), w(w) {}
+
+vec4::vec4(const vec3 &v): x(v.x), y(v.y), z(v.z), w(1.f) {}
+
 GLfloat vec4::dot(const vec4 &v) const {
     return x * v.x + y * v.y + z * v.z + w * v.w;
 }

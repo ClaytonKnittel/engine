@@ -1,9 +1,5 @@
 #pragma once
 
-#ifndef CENGINE_H
-#define CENGINE_H
-#endif
-
 #define GLEW_STATIC
 #include <GL/glew.h>
 

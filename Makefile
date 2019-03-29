@@ -1,6 +1,6 @@
 IDIR=include
 CC=g++
-CFLAGS=-std=c++17 -I$(IDIR) -MMD -MP
+CFLAGS=-std=c++17 -I$(IDIR) -MMD -MP -g
 
 SDIR=src
 ODIR=obj

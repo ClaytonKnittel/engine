@@ -9,9 +9,13 @@ typedef unsigned int uint;
 
 void loadPerspectiveProjection(GLint matrix, float fovy, float aspect, float znear, float zfar);
 
+struct vec3;
 
 struct vec4 {
     GLfloat x, y, z, w;
+
+    vec4(GLfloat x, GLfloat y, GLfloat z, GLfloat w);
+    vec4(const vec3 &v);
 
     GLfloat dot(const vec4 &v) const;
     GLfloat mag() const;

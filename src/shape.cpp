@@ -18,17 +18,17 @@ void compute_normals(const vector<vec3> &vertices, vector<vec3> &normals) {
     }
 }
 
-abstract_shape::abstract_shape(vector<vec3> vertices): vertices(vertices) {
+abstract_shape::abstract_shape(vector<vec3> vertices): vertices(vertices), pos({0.f, 0.f, 0.f}) {
     compute_normals(vertices, normals);
 }
 
-abstract_shape::abstract_shape(vector<vec3> vertices, vector<vec3> normals): vertices(vertices), normals(normals) {
+abstract_shape::abstract_shape(vector<vec3> vertices, vector<vec3> normals): vertices(vertices), normals(normals), pos({0.f, 0.f, 0.f}) {
     if (vertices.size() != normals.size()) {
         fprintf(stderr, "unequal number of vertices and normals in shape: %lu vertices and %lu normals\n", vertices.size(), normals.size());
     }
 }
 
-abstract_shape::abstract_shape() {}
+abstract_shape::abstract_shape(): pos({0.f, 0.f, 0.f}) {}
 
 abstract_shape::~abstract_shape() {
     glDeleteVertexArrays(1, &vao);
@@ -63,12 +63,26 @@ void abstract_shape::bufferData(GLint drawMode) const {
 }
 
 void abstract_shape::setModelMatrix(GLint modelMatrix) const {
-    const float m[16] = {scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, 10.f};
+    const float m[16] = {scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, scale, 0, pos.x, pos.y, pos.z, 1.f};
     glUniformMatrix4fv(modelMatrix, 1, GL_FALSE, m);
 }
 
 void abstract_shape::setScale(float scale) {
     this->scale = scale;
+}
+
+void abstract_shape::setPos(float x, float y, float z) {
+    pos.x = x;
+    pos.y = y;
+    pos.z = z;
+}
+
+void abstract_shape::setPos(const vec3 &v) {
+    pos = v;
+}
+
+const vec3& abstract_shape::getPos() {
+    return pos;
 }
 
 void abstract_shape::init_arrays() {
@@ -100,15 +114,68 @@ void abstract_shape::init_arrays() {
 
 
 
-
-colored_shape::colored_shape(vector<vec3> &vertices, vector<vec4> colors): abstract_shape(vertices), colors(colors) {
+textured_shape::textured_shape(const vector<vec3> &vertices, const vector<vec2> texCoords, const texture &t): abstract_shape(vertices), texCoords(texCoords), tex(t) {
     init_arrays();
     bufferData();
 }
 
-colored_shape::colored_shape(vector<vec3> &vertices, vector<vec3> &normals, vector<vec4> colors): abstract_shape(vertices, normals), colors(colors) {
+textured_shape::textured_shape(const vector<vec3> &vertices, const vector<vec3> &normals, const vector<vec2> texCoords, const texture &t): abstract_shape(vertices, normals), texCoords(texCoords), tex(t) {
     init_arrays();
     bufferData();
+}
+
+textured_shape::textured_shape(const char* obj_file_loc) : abstract_shape() {
+    loadObj(obj_file_loc, this->vertices, this->normals, this->texCoords);
+    if (this->normals.size() == 0)
+        compute_normals(this->vertices, this->normals);
+    tex.load(get_texture_loc(obj_file_loc).c_str());
+    init_arrays();
+    bufferData();
+}
+
+textured_shape::textured_shape() : abstract_shape() {}
+
+void textured_shape::draw() const {
+    tex.use();
+    this->abstract_shape::draw();
+}
+
+uint textured_shape::vertex_size() const {
+    // 3 + 3 + 2
+    return 8;
+}
+
+void textured_shape::setColor(const vec3 &color) {
+    tex.setColor(color.x, color.y, color.z);
+}
+
+void textured_shape::init_vertex_attributes() {
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vertex_size() * sizeof(GLfloat), (GLvoid*) (6 * sizeof(GLfloat)));
+}
+
+void textured_shape::fill_data(GLfloat *data, size_t size, uint stride) const {
+    for (size_t i = 0; i < size; i++) {
+        data[stride * i] = texCoords[i].x;
+        data[stride * i + 1] = texCoords[i].y;
+    }
+}
+
+
+
+
+colored_shape::colored_shape(const vector<vec3> &vertices, const vec4 &color): textured_shape(vertices, std::move(vector<vec2>(vertices.size())), texture(color)) {}
+
+colored_shape::colored_shape(const vector<vec3> &vertices, const vector<vec3> &normals, const vec4 &color): textured_shape(vertices, normals, std::move(vector<vec2>(vertices.size())), texture(color)) {}
+
+colored_shape::colored_shape(const char* obj_file_loc, const vec4 &color): textured_shape() {
+    loadObj(obj_file_loc, this->vertices, this->normals);
+    this->texCoords = std::move(vector<vec2>(this->vertices.size()));
+    for (auto it = texCoords.begin(); it != texCoords.end(); it++) {
+        it->x = 0;
+        it->y = 0;
+    }
+    tex.create(color.x, color.y, color.z, color.w);
 }
 
 uint colored_shape::vertex_size() const {
@@ -127,47 +194,5 @@ void colored_shape::fill_data(GLfloat *data, size_t size, uint stride) const {
         data[stride * i + 1] = colors[i].y;
         data[stride * i + 2] = colors[i].z;
         data[stride * i + 3] = colors[i].w;
-    }
-}
-
-
-
-
-textured_shape::textured_shape(vector<vec3> &vertices, vector<vec2> texCoords, texture &t): abstract_shape(vertices), texCoords(texCoords), tex(t) {
-    init_arrays();
-    bufferData();
-}
-
-textured_shape::textured_shape(vector<vec3> &vertices, vector<vec3> &normals, vector<vec2> texCoords, texture &t): abstract_shape(vertices, normals), texCoords(texCoords), tex(t) {
-    init_arrays();
-    bufferData();
-}
-
-textured_shape::textured_shape(const char* obj_file_loc) : abstract_shape(), tex(get_texture_loc(obj_file_loc).c_str()) {
-    loadObj(obj_file_loc, this->vertices, this->texCoords);
-    compute_normals(this->vertices, this->normals);
-    init_arrays();
-    bufferData();
-}
-
-void textured_shape::draw() const {
-    tex.use();
-    this->abstract_shape::draw();
-}
-
-uint textured_shape::vertex_size() const {
-    // 3 + 3 + 2
-    return 8;
-}
-
-void textured_shape::init_vertex_attributes() {
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vertex_size() * sizeof(GLfloat), (GLvoid*) (6 * sizeof(GLfloat)));
-}
-
-void textured_shape::fill_data(GLfloat *data, size_t size, uint stride) const {
-    for (size_t i = 0; i < size; i++) {
-        data[stride * i] = texCoords[i].x;
-        data[stride * i + 1] = texCoords[i].y;
     }
 }
