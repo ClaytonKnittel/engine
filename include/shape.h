@@ -110,8 +110,8 @@ public:
 
 protected:
     virtual void init_vertex_attributes();
-    virtual void fill_data(GLfloat *data, size_t size, uint stride) const;
+    // virtual void fill_data(GLfloat *data, size_t size, uint stride) const;
 
 private:
-    vector<vec4> colors;
+    // vector<vec4> colors;
 };

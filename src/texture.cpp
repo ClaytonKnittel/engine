@@ -77,7 +77,7 @@ void texture::setColor(float r, float g, float b, float a) {
 
 void texture::use(uint texNum) const {
     if (tex == 0) {
-        // fprintf(stderr, "Warning: texture uninitialized\n");
+        fprintf(stderr, "Warning: using uninitialized texture\n");
         return;
     }
     glActiveTexture(GL_TEXTURE0 + texNum);

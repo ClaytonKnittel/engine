@@ -10,6 +10,19 @@ using std::istringstream;
 #define RESOURCE_LOC "res/"
 #define IMG_TYPE ".png"
 
+struct single {
+    const static uint size = 1;
+    uint i;
+
+    single(const vector<uint> &v): i(v[0]) {}
+
+    uint operator[](const int ind) {
+        if (ind == 0)
+            return i;
+        return 0xffffffff;
+    }
+};
+
 struct tuple {
     const static uint size = 2;
     uint i, j;
@@ -83,15 +96,15 @@ string get_texture_loc(const char* obj_file) {
 // read all data from the file which begins with the specified
 // key and is in vec3 format (x, y, z)
 template<typename dataType>
-void loadAll(ifstream& f, vector<dataType> &vec, const string &key, void(*loadFunc)(istringstream&, vector<dataType>&)) {
-    string buf, test;
-    while (getline(f, buf) && (buf.size() <= key.size() || buf[key.size()] != ' ' || buf.substr(0, key.size()) != key));
-    do {
-        istringstream is(buf);
+void loadAll(vector<string> &f, vector<dataType> &vec, const string &key, void(*loadFunc)(istringstream&, vector<dataType>&)) {
+    string test;
+    for (auto it = f.begin(); it != f.end(); it++) {
+        if (it->size() < key.size()) continue;
+        istringstream is(*it);
         if (!(is >> test) || test != key)
-            break;
+            continue;
         loadFunc(is, vec);
-    } while (getline(f, buf));
+    }
 }
 
 void loadVec2(istringstream &is, vector<vec2> &v) {
@@ -143,18 +156,58 @@ void loadIndex(istringstream &is, vector<storage> &v) {
     }
 }
 
+template<typename storage, typename T>
+void assign(vector<storage> &indices, int index, unsigned int *mins, std::pair<vector<T>&, vector<T>&> vec) {
+    for (int i = 0; i < indices.size(); i++)
+        vec.second.push_back(vec.first[indices[i][index] - mins[index]]);
+}
 
-void loadObj(const char* obj_file, vector<vec3> &vertices, vector<vec2> &texCoords) {
+template<typename storage, typename T, typename...Rest>
+void assign(vector<storage> &indices, int index, unsigned int *mins, std::pair<vector<T>&, vector<T>&> vec, std::pair<vector<Rest>&, vector<Rest>&> ...vecs) {
+    assign(indices, index, mins, vec);
+    assign(indices, index + 1, mins, vecs...);
+}
+
+
+/*
+Takes a series of pairs of vectors of any type of vecmath vector,
+with the first vector in the pair being the source and the second
+being the destination. Using the index data from file, each of
+the destination vectors is filled with corresponding data from
+source so that indexing will not be necessary when rendering
+(this is due to OpenGL not supporting multiple indexing)
+*/
+template<typename storage, typename...T>
+void indexVectors(vector<string> &file, std::pair<vector<T>&, vector<T>&> ...vecs) {
+    vector<storage> indices;
+    loadAll<storage>(file, indices, "f", &loadIndex);
+
+    constexpr size_t num = sizeof...(T);
+    unsigned int mins[num] = {0xffffffff};
+    for (storage &i : indices) {
+        for (int q = 0; q < num; q++) {
+            if (i[q] < mins[q])
+                mins[q] = i[q];
+        }
+    }
+    assign(indices, 0, mins, vecs...);
+}
+
+
+/*void loadObj(const char* obj_file, vector<vec3> &vertices, vector<vec2> &texCoords) {
     ifstream f;
     open_obj_file(f, obj_file);
+    vector<string> file;
+    string buf;
+    while (getline(f, buf)) file.push_back(buf);
 
     vector<vec3> verts;
     vector<vec2> texs;
     vector<tuple> indices;
 
-    loadAll<vec3>(f, verts, "v", &loadVec3);
-    loadAll<vec2>(f, texs, "vt", &loadVec2);
-    loadAll<tuple>(f, indices, "f", &loadIndex);
+    loadAll<vec3>(file, verts, "v", &loadVec3);
+    loadAll<vec2>(file, texs, "vt", &loadVec2);
+    loadAll<tuple>(file, indices, "f", &loadIndex);
 
     unsigned int mins[2] = {0xffffffff, 0xffffffff};
     for (tuple &i : indices) {
@@ -173,14 +226,17 @@ void loadObj(const char* obj_file, vector<vec3> &vertices, vector<vec2> &texCoor
 void loadObj(const char* obj_file, vector<vec3> &vertices, vector<vec3> &normals) {
     ifstream f;
     open_obj_file(f, obj_file);
+    vector<string> file;
+    string buf;
+    while (getline(f, buf)) file.push_back(buf);
 
     vector<vec3> verts;
     vector<vec3> norms;
     vector<tuple> indices;
 
-    loadAll<vec3>(f, verts, "v", &loadVec3);
-    loadAll<vec3>(f, norms, "vn", &loadVec3);
-    loadAll<tuple>(f, indices, "f", &loadIndex);
+    loadAll<vec3>(file, verts, "v", &loadVec3);
+    loadAll<vec3>(file, norms, "vn", &loadVec3);
+    loadAll<tuple>(file, indices, "f", &loadIndex);
 
     unsigned int mins[2] = {0xffffffff, 0xffffffff};
     for (tuple &i : indices) {
@@ -194,33 +250,43 @@ void loadObj(const char* obj_file, vector<vec3> &vertices, vector<vec3> &normals
         vertices.push_back(verts[indices[i][0] - mins[0]]);
         normals.push_back(norms[indices[i][1] - mins[1]]);
     }
-}
+}*/
 
-void loadObj(const char* obj_file, vector<vec3> &vertices, vector<vec3> &normals, vector<vec2> &texCoords) {
+void loadObj(const char* obj_file, vector<vec3> *vertices, vector<vec3> *normals, vector<vec2> *texCoords) {
     ifstream f;
     open_obj_file(f, obj_file);
+    vector<string> file;
+    string buf;
+    while (getline(f, buf)) file.push_back(buf);
 
     vector<vec3> verts;
     vector<vec3> norms;
     vector<vec2> texs;
     vector<triple> indices;
 
-    loadAll<vec3>(f, verts, "v", &loadVec3);
-    loadAll<vec3>(f, norms, "vn", &loadVec3);
-    loadAll<vec2>(f, texs, "vt", &loadVec2);
-    loadAll<triple>(f, indices, "f", &loadIndex);
+    loadAll<vec3>(file, verts, "v", &loadVec3);
+    if (normals)
+        loadAll<vec3>(file, norms, "vn", &loadVec3);
+    if (texCoords)
+        loadAll<vec2>(file, texs, "vt", &loadVec2);
 
-    unsigned int mins[3] = {0xffffffff, 0xffffffff, 0xffffffff};
-    for (triple &i : indices) {
-        for (int q = 0; q < 3; q++) {
-            if (i[q] < mins[q])
-                mins[q] = i[q];
-        }
+    printf("sizes: norms %lu, texs %lu\n", norms.size(), texs.size());
+    printf("%s\n", obj_file);
+
+    if (norms.size() > 0 && texs.size() > 0) {
+        indexVectors<triple>(file, std::pair<vector<vec3>&, vector<vec3>&>(verts, *vertices),
+                                   std::pair<vector<vec3>&, vector<vec3>&>(norms, *normals),
+                                   std::pair<vector<vec2>&, vector<vec2>&>(texs, *texCoords));
     }
-
-    for (int i = 0; i < indices.size(); i++) {
-        vertices.push_back(verts[indices[i][0] - mins[0]]);
-        normals.push_back(norms[indices[i][1] - mins[1]]);
-        texCoords.push_back(texs[indices[i][2] - mins[2]]);
+    else if (norms.size() > 0) {
+        indexVectors<tuple>(file, std::pair<vector<vec3>&, vector<vec3>&>(verts, *vertices),
+                                   std::pair<vector<vec3>&, vector<vec3>&>(norms, *normals));
+    }
+    else if (texs.size() > 0) {
+        indexVectors<tuple>(file, std::pair<vector<vec3>&, vector<vec3>&>(verts, *vertices),
+                                   std::pair<vector<vec2>&, vector<vec2>&>(texs, *texCoords));
+    }
+    else {
+        indexVectors<single>(file, std::pair<vector<vec3>&, vector<vec3>&>(verts, *vertices));
     }
 }
