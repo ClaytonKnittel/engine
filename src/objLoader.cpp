@@ -183,7 +183,8 @@ void indexVectors(vector<string> &file, std::pair<vector<T>&, vector<T>&> ...vec
     loadAll<storage>(file, indices, "f", &loadIndex);
 
     constexpr size_t num = sizeof...(T);
-    unsigned int mins[num] = {0xffffffff};
+    unsigned int mins[num];
+    memset(mins, 0xffffffff, num);
     for (storage &i : indices) {
         for (int q = 0; q < num; q++) {
             if (i[q] < mins[q])
@@ -193,64 +194,6 @@ void indexVectors(vector<string> &file, std::pair<vector<T>&, vector<T>&> ...vec
     assign(indices, 0, mins, vecs...);
 }
 
-
-/*void loadObj(const char* obj_file, vector<vec3> &vertices, vector<vec2> &texCoords) {
-    ifstream f;
-    open_obj_file(f, obj_file);
-    vector<string> file;
-    string buf;
-    while (getline(f, buf)) file.push_back(buf);
-
-    vector<vec3> verts;
-    vector<vec2> texs;
-    vector<tuple> indices;
-
-    loadAll<vec3>(file, verts, "v", &loadVec3);
-    loadAll<vec2>(file, texs, "vt", &loadVec2);
-    loadAll<tuple>(file, indices, "f", &loadIndex);
-
-    unsigned int mins[2] = {0xffffffff, 0xffffffff};
-    for (tuple &i : indices) {
-        for (int q = 0; q < 2; q++) {
-            if (i[q] < mins[q])
-                mins[q] = i[q];
-        }
-    }
-
-    for (int i = 0; i < indices.size(); i++) {
-        vertices.push_back(verts[indices[i][0] - mins[0]]);
-        texCoords.push_back(texs[indices[i][1] - mins[1]]);
-    }
-}
-
-void loadObj(const char* obj_file, vector<vec3> &vertices, vector<vec3> &normals) {
-    ifstream f;
-    open_obj_file(f, obj_file);
-    vector<string> file;
-    string buf;
-    while (getline(f, buf)) file.push_back(buf);
-
-    vector<vec3> verts;
-    vector<vec3> norms;
-    vector<tuple> indices;
-
-    loadAll<vec3>(file, verts, "v", &loadVec3);
-    loadAll<vec3>(file, norms, "vn", &loadVec3);
-    loadAll<tuple>(file, indices, "f", &loadIndex);
-
-    unsigned int mins[2] = {0xffffffff, 0xffffffff};
-    for (tuple &i : indices) {
-        for (int q = 0; q < 2; q++) {
-            if (i[q] < mins[q])
-                mins[q] = i[q];
-        }
-    }
-
-    for (int i = 0; i < indices.size(); i++) {
-        vertices.push_back(verts[indices[i][0] - mins[0]]);
-        normals.push_back(norms[indices[i][1] - mins[1]]);
-    }
-}*/
 
 void loadObj(const char* obj_file, vector<vec3> *vertices, vector<vec3> *normals, vector<vec2> *texCoords) {
     ifstream f;
